@@ -23,16 +23,25 @@ def signup():
 
 @api.route('/login', methods=['POST'])
 def login():
-    email = request.json.get("email", None)
-    password = request.json.get("password", None)
+    try:
+        email = request.json.get("email", None)
+        password = request.json.get("password", None)
 
-    user = User.query.filter_by(email=email).first()
+        print("Email:", email)
+        print("Password:", password)
 
-    if not user or user.password != password:
-        return jsonify({ "msg": "Credenciales inválidas" }), 401
+        user = User.query.filter_by(email=email).first()
 
-    token = create_access_token(identity=user.id, additional_claims=user.serialize())
-    return jsonify({ "token": token }), 200
+        if not user or user.password != password:
+            return jsonify({ "msg": "Credenciales inválidas" }), 401
+
+        token = create_access_token(identity=user.id, additional_claims=user.serialize())
+        return jsonify({ "token": token }), 200
+
+    except Exception as e:
+        print("ERROR en login:", e)
+        return jsonify({ "msg": "Error interno en el login", "error": str(e) }), 500
+
 
 @api.route('/private', methods=['GET'])
 @jwt_required()
