@@ -35,7 +35,8 @@ def login():
         if not user or user.password != password:
             return jsonify({ "msg": "Credenciales inválidas" }), 401
 
-        token = create_access_token(identity=user.id, additional_claims=user.serialize())
+        token = create_access_token(identity=user.id, additional_claims={"email": user.email})
+
         return jsonify({ "token": token }), 200
 
     except Exception as e:
