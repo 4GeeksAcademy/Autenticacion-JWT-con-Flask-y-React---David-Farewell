@@ -35,13 +35,15 @@ def login():
         if not user or user.password != password:
             return jsonify({ "msg": "Credenciales inválidas" }), 401
 
-        token = create_access_token(identity=user.id, additional_claims={"email": user.email})
+        claims = {k: str(v) for k, v in user.serialize().items()}
+        token = create_access_token(identity=str(user.id), additional_claims=claims)
 
         return jsonify({ "token": token }), 200
 
     except Exception as e:
         print("ERROR en login:", e)
         return jsonify({ "msg": "Error interno en el login", "error": str(e) }), 500
+
 
 
 @api.route('/private', methods=['GET'])
